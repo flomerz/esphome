@@ -1,0 +1,71 @@
+esphome:
+  name: espresso-mill
+
+esp8266:
+  board: d1_mini
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+logger:
+api:
+ota:
+
+sensor:
+  - platform: homeassistant
+    id: time_single
+    entity_id: input_number.espresso_mill_time_single
+  - platform: homeassistant
+    id: time_double
+    entity_id: input_number.espresso_mill_time_double
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO15
+    id: button
+    on_multi_click:
+    # Single
+    - timing:
+        - ON for at least 0.5s
+      then:
+        - if:
+            condition:
+              - switch.is_on: mill
+            then:
+              - logger.log: "Cancel"
+              - switch.turn_off: mill
+            else:
+              - logger.log: "START Single"
+              - logger.log:
+                  format: "START Single [%.2fs]"
+                  args: [ 'id(time_single).state' ]
+              - switch.turn_on: mill
+              - delay: !lambda 'return id(time_single).state * 1000;'
+              - switch.turn_off: mill
+              - logger.log: "END Single"
+    # Double
+    - timing:
+        - ON for at most 0.5s
+      then:
+        - if:
+            condition:
+              - switch.is_on: mill
+            then:
+              - logger.log: "Cancel"
+              - switch.turn_off: mill
+            else:
+              - logger.log:
+                  format: "START Double [%.2fs]"
+                  args: [ 'id(time_double).state' ]
+              - switch.turn_on: mill
+              - delay: !lambda 'return id(time_double).state * 1000;'
+              - switch.turn_off: mill
+              - logger.log: "END Double"
+
+switch:
+  - platform: gpio
+    pin: GPIO04
+    id: mill
+    name: Espresso Mill
+    icon: mdi:coffee-maker

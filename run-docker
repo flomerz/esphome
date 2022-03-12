@@ -1,0 +1,2 @@
+firefox localhost:6052
+docker run --rm --net=host -v "$PWD":/config -it esphome/esphome
