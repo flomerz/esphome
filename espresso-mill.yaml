@@ -16,9 +16,11 @@ sensor:
   - platform: homeassistant
     id: time_single
     entity_id: input_number.espresso_mill_time_single
+    accuracy_decimals: 2
   - platform: homeassistant
     id: time_double
     entity_id: input_number.espresso_mill_time_double
+    accuracy_decimals: 2
 
 binary_sensor:
   - platform: gpio
