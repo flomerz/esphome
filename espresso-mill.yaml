@@ -21,49 +21,10 @@ sensor:
     id: time_double
     entity_id: input_number.espresso_mill_time_double
     accuracy_decimals: 2
-
-binary_sensor:
-  - platform: gpio
-    pin: GPIO15
-    id: button
-    on_multi_click:
-    # Single
-    - timing:
-        - ON for at least 0.5s
-      then:
-        - if:
-            condition:
-              - switch.is_on: mill
-            then:
-              - logger.log: "Cancel"
-              - switch.turn_off: mill
-            else:
-              - logger.log: "START Single"
-              - logger.log:
-                  format: "START Single [%.2fs]"
-                  args: [ 'id(time_single).state' ]
-              - switch.turn_on: mill
-              - delay: !lambda 'return id(time_single).state * 1000;'
-              - switch.turn_off: mill
-              - logger.log: "END Single"
-    # Double
-    - timing:
-        - ON for at most 0.5s
-      then:
-        - if:
-            condition:
-              - switch.is_on: mill
-            then:
-              - logger.log: "Cancel"
-              - switch.turn_off: mill
-            else:
-              - logger.log:
-                  format: "START Double [%.2fs]"
-                  args: [ 'id(time_double).state' ]
-              - switch.turn_on: mill
-              - delay: !lambda 'return id(time_double).state * 1000;'
-              - switch.turn_off: mill
-              - logger.log: "END Double"
+  - platform: homeassistant
+    id: time_tripple
+    entity_id: input_number.espresso_mill_time_tripple
+    accuracy_decimals: 2
 
 switch:
   - platform: gpio
@@ -71,3 +32,85 @@ switch:
     id: mill
     name: Espresso Mill
     icon: mdi:coffee-maker
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO15
+    id: button
+    on_multi_click:
+      # Manual ON
+      - timing:
+          - ON for at least 0.5s
+        then:
+          - logger.log: "Manual ON"
+          - switch.turn_on: mill
+      # Manual OFF
+      - timing:
+          - ON for at least 0.5s
+          - OFF for at least 0s
+        then:
+          - logger.log: "Manual OFF"
+          - switch.turn_off: mill
+      # Single
+      - timing:
+          - ON for at most 0.5s
+          - OFF for at least 0.5s
+        then:
+          - if:
+              condition:
+                - switch.is_on: mill
+              then:
+                - logger.log: "CANCEL"
+                - switch.turn_off: mill
+              else:
+                - logger.log:
+                    format: "START Single [%.2fs]"
+                    args: [ 'id(time_single).state' ]
+                - switch.turn_on: mill
+                - delay: !lambda 'return id(time_single).state * 1000;'
+                - switch.turn_off: mill
+                - logger.log: "END Single"
+      # Double
+      - timing:
+          - ON for at most 0.5s
+          - OFF for at most 0.5s
+          - ON for at most 0.5s
+          - OFF for at least 0.5s
+        then:
+          - if:
+              condition:
+                - switch.is_on: mill
+              then:
+                - logger.log: "CANCEL"
+                - switch.turn_off: mill
+              else:
+                - logger.log:
+                    format: "START Double [%.2fs]"
+                    args: [ 'id(time_double).state' ]
+                - switch.turn_on: mill
+                - delay: !lambda 'return id(time_double).state * 1000;'
+                - switch.turn_off: mill
+                - logger.log: "END Double"
+      # Tripple
+      - timing:
+          - ON for at most 0.5s
+          - OFF for at most 0.5s
+          - ON for at most 0.5s
+          - OFF for at most 0.5s
+          - ON for at most 0.5s
+          - OFF for at least 0.5s
+        then:
+          - if:
+              condition:
+                - switch.is_on: mill
+              then:
+                - logger.log: "CANCEL"
+                - switch.turn_off: mill
+              else:
+                - logger.log:
+                    format: "START Tripple [%.2fs]"
+                    args: [ 'id(time_tripple).state' ]
+                - switch.turn_on: mill
+                - delay: !lambda 'return id(time_tripple).state * 1000;'
+                - switch.turn_off: mill
+                - logger.log: "END Tripple"
