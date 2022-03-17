@@ -54,7 +54,7 @@ binary_sensor:
       # Single
       - timing:
           - ON for at most 0.5s
-          - OFF for at least 0.5s
+          - OFF for at least 1s
         then:
           - if:
               condition:
@@ -73,9 +73,9 @@ binary_sensor:
       # Double
       - timing:
           - ON for at most 0.5s
-          - OFF for at most 0.5s
+          - OFF for at most 1s
           - ON for at most 0.5s
-          - OFF for at least 0.5s
+          - OFF for at least 1s
         then:
           - if:
               condition:
@@ -94,11 +94,11 @@ binary_sensor:
       # Tripple
       - timing:
           - ON for at most 0.5s
-          - OFF for at most 0.5s
+          - OFF for at most 1s
           - ON for at most 0.5s
-          - OFF for at most 0.5s
+          - OFF for at most 1s
           - ON for at most 0.5s
-          - OFF for at least 0.5s
+          - OFF for at least 1s
         then:
           - if:
               condition:
