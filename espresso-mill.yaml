@@ -22,8 +22,8 @@ sensor:
     entity_id: input_number.espresso_mill_time_double
     accuracy_decimals: 2
   - platform: homeassistant
-    id: time_tripple
-    entity_id: input_number.espresso_mill_time_tripple
+    id: time_triple
+    entity_id: input_number.espresso_mill_time_triple
     accuracy_decimals: 2
 
 switch:
@@ -91,7 +91,7 @@ binary_sensor:
                 - delay: !lambda 'return id(time_double).state * 1000;'
                 - switch.turn_off: mill
                 - logger.log: "END Double"
-      # Tripple
+      # Triple
       - timing:
           - ON for at most 0.5s
           - OFF for at most 1s
@@ -108,9 +108,9 @@ binary_sensor:
                 - switch.turn_off: mill
               else:
                 - logger.log:
-                    format: "START Tripple [%.2fs]"
-                    args: [ 'id(time_tripple).state' ]
+                    format: "START Triple [%.2fs]"
+                    args: [ 'id(time_triple).state' ]
                 - switch.turn_on: mill
-                - delay: !lambda 'return id(time_tripple).state * 1000;'
+                - delay: !lambda 'return id(time_triple).state * 1000;'
                 - switch.turn_off: mill
-                - logger.log: "END Tripple"
+                - logger.log: "END Triple"
